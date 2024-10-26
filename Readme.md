@@ -90,11 +90,11 @@ Now, I run the application by running below command successfully
 ```bash
 uvicorn main:app --reload
 ```
-![alt text](images\startup.png)
+![alt text](images/startup.png)
 
 After successful application startup, I was able to see my application running on my machine i.e, localhost `127.0.0.1:8000/docs` as it runs on **8000** port as shown in below image
 
-![alt text](images\fastapi1.png)
+![alt text](images/fastapi1.png)
 
 ## setting up the datastorage
 Now the problem with this is I can able to run this application successfully.But, It is not communicating with database, So for this i created a file `.env` which has an Environmental variable `DATABASE_URL` to speak with my database i.e, **Postgresql**
@@ -116,7 +116,7 @@ Now, I had brought up containers online in detached mode by following command
 ```bash
 docker compose up -d
 ```
-![alt text](images\docker1.png)
+![alt text](images/docker1.png)
 
 ## application runtime
 And the communication was established between these two containers and were able to communicate with each other as they are present over same network.Now, I run the application with `uvicorn main:app --reload` 
@@ -127,23 +127,23 @@ Now I had performed some crud actions weather my application running successfull
 
 Firstly, `http://127.0.0.1:8000/docs`
 
-![alt text](images\fastapi1.png)
+![alt text](images/fastapi1.png)
 
 **To create a book**, `http://127.0.0.1:8000/books` method:post and clicked on try it
 
- ![alt text](images\fastapi2.png)
+ ![alt text](images/fastapi2.png)
 
 Then, clicked on Execute and got a response as like below
 
-![alt text](images\fastapi3.png)
+![alt text](images/fastapi3.png)
 
 **To get books**, `http://127.0.0.1:8000/books` method:get and clicked on try it
 
- ![alt text](images\getbooks.png)
+ ![alt text](images/getbooks.png)
 
 Then, clicked on Execute and got a response as like below
 
-![alt text](images\getbooks1.png)
+![alt text](images/getbooks1.png)
 
 To see weather the postgres table is communicating with my application or not I had typed the below command
 ```bash
@@ -151,41 +151,41 @@ docker exec -it postgres psql -U srikanth -d library
 ```
 was able to get the following response
 
-![alt text](images\postgres.png)
+![alt text](images/postgres.png)
 
 **To get a book**, `http://127.0.0.1:8000/books/2` method:get and clicked on try it
 
- ![alt text](images\getbook.png)
+ ![alt text](images/getbook.png)
 
 Then, clicked on Execute and got a response as like below
 
-![alt text](images\getbook1.png)
+![alt text](images/getbook1.png)
 
 **To update a book**, `http://127.0.0.1:8000/books/3` method:put and clicked on try it
 
- ![alt text](images\updatebook.png)
+ ![alt text](images/updatebook.png)
 
 Then, clicked on Execute and got a response as like below
 
-![alt text](images\updatebook1.png)
+![alt text](images/updatebook1.png)
 
 **To delete a book**, `http://127.0.0.1:8000/books/4` method:delete and clicked on try it
 
- ![alt text](images\deletebook.png)
+ ![alt text](images/deletebook.png)
 
 Then, clicked on Execute and got a response as like below
 
-![alt text](images\deletebook1.png)
+![alt text](images/deletebook1.png)
 
 To see weather items deleted or not in postgres books table
 
-![alt text](images\postgres1.png) 
+![alt text](images/postgres1.png) 
 
 After knowing that my application is running smoothly, my functions are working as per my requirement and also speaking with database.Then, I Brought down my containers by the following command
 ```bash
 docker compose down
 ```
-![alt text](images\down.png)
+![alt text](images/down.png)
 
  
 

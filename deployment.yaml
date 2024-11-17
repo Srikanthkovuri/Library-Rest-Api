@@ -1,0 +1,150 @@
+# prodution namespace
+---
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: prod
+---
+# Configmaps for books,postgres db in production namespace
+---
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: books-config
+    namespace: prod
+  data:
+    DATABASE_URL: postgresql://srikanth:srikanthkovuri@books-db-svc:5432/library
+---
+---
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: db-config
+    namespace: prod
+  data:
+    POSTGRES_USER: srikanth
+    POSTGRES_PASSWORD: srikanthkovuri
+    POSTGRES_DB: library
+---
+# statefulset controller for stateful application in prod namesapce i.e, postgres-db
+---
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: db-sfs
+    namespace: prod
+    annotations:
+      kubernetes.io/change-cause: v1.0
+  spec:
+    selector:
+      matchLabels:
+        app: books-db
+    serviceName: books-db-svc
+    minReadySeconds: 5
+    replicas: 2
+    template:
+      metadata:
+        labels:
+          app: books-db
+      spec:
+        containers:
+        - name: books-postgres
+          image: postgres:15-alpine
+          envFrom:
+            - configMapRef:
+                name: db-config
+          ports:
+          - containerPort: 5432
+          resources:
+            requests:
+              memory: 80M
+              cpu: 200m
+            limits:
+              memory: 450M
+              cpu: 500m
+          volumeMounts:
+          - name: postgres
+            mountPath: /var/lib/postgresql/data
+    volumeClaimTemplates:
+    - metadata:
+        name: postgres
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+---
+# Headless service object to access stateful application in production namespace
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: books-db-svc
+    namespace: prod
+  spec:
+    type: ClusterIP
+    clusterIP: None
+    selector:
+      app: books-db
+    ports:
+    - port: 5432
+      targetPort: 5432
+---
+# Deployment controller for stateless application in prod namespace i.e, books api
+---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: library-deployment
+    namespace: prod
+    annotations:
+      kubernetes.io/change-cause: "v1.0"
+  spec:
+    minReadySeconds: 3
+    replicas: 2
+    strategy:
+      rollingUpdate:
+        maxSurge: 50%
+        maxUnavailable: 50%
+    selector:
+      matchLabels:
+        app: books
+    template:
+      metadata:
+        labels:
+          app: books
+          version: v1.0
+      spec:
+        containers:
+          - name: lib-books
+            image: srikanthkovuri/lib-book:1.0
+            envFrom:
+              - configMapRef:
+                  name: books-config
+            resources:
+              requests:
+                memory: 80M
+                cpu: 100m
+              limits:
+                memory: 180M
+                cpu: 500m
+            ports:
+              - containerPort: 8000
+---
+# service object for to access application from outside 
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: books-svc
+    namespace: prod
+  spec:
+    type: LoadBalancer
+    selector:
+      app: books
+    ports:
+    - port: 8000
+      targetPort: 8000
+  
+        
+     
